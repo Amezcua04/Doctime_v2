@@ -3,13 +3,16 @@
 use App\Http\Controllers\Admin\AppointmentBillingController;
 use App\Http\Controllers\Admin\AppointmentController;
 use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CheckoutController;
+use App\Http\Controllers\Admin\ClinicalCatalogController;
 use App\Http\Controllers\Admin\ClinicalRecordController;
 use App\Http\Controllers\Admin\ClinicSettingController;
 use App\Http\Controllers\Admin\DoctorController;
 use App\Http\Controllers\Admin\FinancialReportController;
 use App\Http\Controllers\Admin\MedicalAttachmentController;
 use App\Http\Controllers\Admin\MyScheduleController;
+use App\Http\Controllers\Admin\OdontogramController;
 use App\Http\Controllers\Admin\OperationalReportController;
 use App\Http\Controllers\Admin\PatientContractController;
 use App\Http\Controllers\Admin\PatientController;
@@ -89,6 +92,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::resource('patients', PatientController::class)->except(['create', 'show', 'edit']);
 
             Route::prefix('patients/{patient}')->name('patients.')->group(function () {
+
+                // Odontograma
+                Route::post('/odontogram/items', [OdontogramController::class, 'storeItem'])->name('odontogram.store');
+                Route::delete('/odontogram/items/{item}', [OdontogramController::class, 'destroyItem'])->name('odontogram.destroy');
+                Route::post('/odontogram/items/batch-delete', [OdontogramController::class, 'destroyBatch'])->name('patients.odontogram.destroyBatch');
+
                 // Ortodoncia
                 Route::post('/orthodontic-notes', [OrthodonticNoteController::class, 'sync'])->name('orthodontic-notes.sync');
                 Route::delete('/orthodontic-notes/{note}', [OrthodonticNoteController::class, 'destroy'])->name('orthodontic-notes.destroy');
@@ -135,6 +144,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('services', ServiceController::class)->except(['create', 'show', 'edit']);
         Route::resource('payment-methods', PaymentMethodController::class)->except(['create', 'show', 'edit']);
         Route::resource('specialties', SpecialtyController::class)->except(['create', 'show', 'edit']);
+        Route::resource('categories', CategoryController::class)->only(['store', 'update', 'destroy']);
+        Route::resource('catalogs', ClinicalCatalogController::class)->except(['create', 'show', 'edit']);
 
         // Usuarios
         Route::resource('staff', StaffController::class)->parameters(['staff' => 'user'])->except(['create', 'edit', 'show']);

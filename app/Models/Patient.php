@@ -59,10 +59,15 @@ class Patient extends Model
                     'deleted'  => 'eliminado',
                     'restored' => 'restaurado',
                 ];
-                
+
                 $accion = $traducciones[$eventName] ?? $eventName;
-                
+
                 return "El paciente fue {$accion}";
             });
+    }
+
+    public function odontogram(): HasOne
+    {
+        return $this->hasOne(Odontogram::class);
     }
 }

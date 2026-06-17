@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CatalogItem;
 use App\Models\ContractTemplate;
 use App\Models\Patient;
 use Illuminate\Http\Request;
@@ -46,7 +47,8 @@ class ClinicalRecordController extends Controller
             },
             'orthodonticNotes' => function ($query) {
                 $query->orderBy('date', 'desc');
-            }
+            },
+            'odontogram.items.catalogItem'
         ]);
 
         if (!$patient->medicalRecord) {
@@ -54,11 +56,21 @@ class ClinicalRecordController extends Controller
             $patient->load('medicalRecord');
         }
 
+        if (!$patient->odontogram) {
+            $patient->odontogram()->create([
+                'doctor_id' => auth()->id()
+            ]);
+            $patient->load('odontogram.items.catalogItem');
+        }
+
+        $patient->odontogram_items = $patient->odontogram ? $patient->odontogram->items : [];
         $templates = ContractTemplate::where('is_active', true)->get(['id', 'title', 'type', 'content']);
+        $catalogItems = CatalogItem::with('category')->get();
 
         return Inertia::render('admin/patients/medical-record/index', [
             'patient' => $patient,
             'templates' => $templates,
+            'catalogItems' => $catalogItems,
         ]);
     }
 

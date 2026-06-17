@@ -83,6 +83,12 @@ const mainNavItems: AppNavItem[] = [
         roles: ['admin'],
     },
     {
+        title: "Catalogo",
+        href: "/admin/catalogs",
+        icon: Tag,
+        roles: ['admin'],
+    },
+    {
         title: "Métodos de pago",
         href: "/admin/payment-methods",
         icon: CreditCard,

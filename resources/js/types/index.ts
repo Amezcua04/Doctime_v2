@@ -261,3 +261,38 @@ export interface InConsultationPatient {
   time: string;
   duration: string;
 }
+
+export interface Category {
+  id: number;
+  name: string;
+}
+
+export interface CatalogItem {
+  id: number;
+  type: 'lesion' | 'preexistence' | 'treatment';
+  treatment_category_id: number | null;
+  name: string;
+  image_path: string | null;
+  requires_surface: boolean;
+  default_cost: number;
+  category?: Category;
+}
+
+export type Surface = 'vestibular' | 'lingual' | 'mesial' | 'distal' | 'oclusal' | 'general';
+
+export type OdontogramItemStatus = 'preexistent' | 'planned' | 'completed';
+
+export interface OdontogramItemState {
+  id?: number;
+  tooth_number: number;
+  surface: Surface;
+  catalog_item: CatalogItem;
+  status: OdontogramItemStatus;
+  cost?: number;
+}
+
+export interface Condition {
+  id?: number | string;
+  surface: Surface | 'general' | null;
+  catalog_item: CatalogItem;
+}
