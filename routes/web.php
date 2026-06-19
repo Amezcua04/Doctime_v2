@@ -30,8 +30,13 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::inertia('/', 'welcome')->name('home');
+
+Route::get('/contact', function () {
+    return Inertia::render('contact');
+})->name('public.contact');
 
 Route::get('/webhook/whatsapp', [WhatsAppWebhookController::class, 'verify']);
 Route::post('/webhook/whatsapp', [WhatsAppWebhookController::class, 'handle'])

@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\ClinicSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Inertia\Middleware;
 use Illuminate\Support\Str;
 
@@ -48,8 +49,8 @@ class HandleInertiaRequests extends Middleware
                 'unreadCount' => $request->user() ? $request->user()->unreadNotifications()->count() : 0,
                 'unreadMessagesCount' => $request->user() ? $request->user()->unreadMessages()->count() : 0,
             ],
-            'clinic' => Cache::rememberForever('clinic_settings', function () {
-                return ClinicSetting::first() ?? null;
+            'clinic' => Cache::rememberForever('clinic_settings_db', function () {
+                return DB::table('clinic_settings')->first(); 
             }),
             'flash' => [
                 'success' => $request->session()->get('success'),

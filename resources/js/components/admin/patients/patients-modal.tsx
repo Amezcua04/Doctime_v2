@@ -138,10 +138,13 @@ export const PatientModal = ({ isOpen, onClose, editingPatient }: Props) => {
                   <Phone className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="phone"
-                    placeholder="555-000-0000"
+                    placeholder="Ej. 3114000218"
                     className="pl-9 bg-background"
                     value={data.phone}
-                    onChange={e => setData('phone', e.target.value)}
+                    onChange={e => {
+                      const soloNumeros = e.target.value.replace(/\D/g, '');
+                      setData('phone', soloNumeros.slice(0, 10));
+                    }}
                   />
                 </div>
                 {errors.phone && <span className="text-xs text-destructive">{errors.phone}</span>}

@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Activity, Award, BookOpen, CalendarClock, CalendarDays, CircleDollarSign, CreditCard, FolderGit2, History, Hospital, LayoutGrid, MessageSquare, Stethoscope, Tag, UserCog, Users } from 'lucide-react';
+import { Activity, Award, BellRing, BookOpen, BriefcaseMedical, CalendarClock, CalendarDays, CircleDollarSign, ClipboardPlus, CreditCard, FolderGit2, History, Hospital, Layers, LayoutDashboard, LayoutGrid, MessageSquare, ShieldCheck, Stethoscope, Tag, UserCog, Users } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -31,7 +31,7 @@ const mainNavItems: AppNavItem[] = [
     {
         title: 'Dashboard',
         href: dashboard(),
-        icon: LayoutGrid,
+        icon: LayoutDashboard,
     },
     {
         title: "Agenda",
@@ -61,7 +61,7 @@ const mainNavItems: AppNavItem[] = [
     {
         title: "Especialidades",
         href: "/admin/specialties",
-        icon: Award,
+        icon: BriefcaseMedical,
         roles: ['admin'],
     },
     {
@@ -79,13 +79,13 @@ const mainNavItems: AppNavItem[] = [
     {
         title: "Servicios",
         href: "/admin/services",
-        icon: Tag,
+        icon: ClipboardPlus,
         roles: ['admin'],
     },
     {
-        title: "Catalogo",
+        title: "Catalogos",
         href: "/admin/catalogs",
-        icon: Tag,
+        icon: Layers,
         roles: ['admin'],
     },
     {
@@ -97,13 +97,13 @@ const mainNavItems: AppNavItem[] = [
     {
         title: "Auditoría",
         href: "/admin/audit",
-        icon: History,
+        icon: ShieldCheck,
         roles: ['admin'],
     },
     {
         title: "Recordatorios",
         href: "/admin/reminders",
-        icon: History,
+        icon: BellRing,
         roles: ['admin'],
     },
     {
@@ -117,19 +117,6 @@ const mainNavItems: AppNavItem[] = [
         href: "/admin/reports/financial",
         icon: CircleDollarSign,
         roles: ['admin'],
-    },
-];
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: FolderGit2,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
     },
 ];
 

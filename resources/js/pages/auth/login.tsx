@@ -44,7 +44,7 @@ export default function Login({ status, canResetPassword, clinic }: Props) {
                                     autoFocus
                                     tabIndex={1}
                                     autoComplete="email"
-                                    placeholder="email@sunrise-dentalmx.com"
+                                    placeholder="email@doctime.com"
                                 />
                                 <InputError message={errors.email} />
                             </div>
