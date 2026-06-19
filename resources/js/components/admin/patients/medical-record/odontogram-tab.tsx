@@ -114,32 +114,33 @@ export const OdontogramTab = ({ patientId, initialItems, catalogItems }: Props) 
   };
 
   return (
-    <div className={`transition-all duration-300 w-full relative
+    <div className={`transition-all duration-300 w-full h-full relative flex flex-col
       ${interactionMode === 'info' ? 'ring-4 ring-indigo-100 rounded-xl' : ''}
     `}>
 
       {selectedZones.length > 0 && interactionMode === 'select' && (
         <div
-          className="absolute top-2 left-1/2 -translate-x-1/2 z-50 bg-primary text-primary-foreground px-4 py-1.5 rounded-full shadow-lg text-sm font-medium animate-in slide-in-from-top-2 flex items-center gap-2 cursor-pointer hover:bg-primary/90"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm md:absolute md:top-4 md:bottom-auto md:w-auto z-50 bg-primary text-primary-foreground px-4 py-2.5 md:py-1.5 rounded-full shadow-xl text-sm font-medium animate-in slide-in-from-bottom-4 md:slide-in-from-top-2 flex items-center justify-center gap-2 cursor-pointer hover:bg-primary/90"
           onClick={() => setSelectedZones([])}
         >
-          {selectedZones.length} {selectedZones.length > 1 ? 'zonas seleccionadas' : 'zona seleccionada'} — Clic para cancelar
+          <span className="truncate">
+            {selectedZones.length} {selectedZones.length > 1 ? 'zonas seleccionadas' : 'zona seleccionada'}
+          </span>
+          <span className="opacity-70 text-xs shrink-0">— Clic para cancelar</span>
         </div>
       )}
 
+      {/* Contenedor responsivo para el grid. Permite scroll horizontal en móviles si el grid es muy ancho */}
       <OdontogramGrid
         items={items}
         selectedZones={selectedZones}
         onSurfaceClick={handleSurfaceClick}
-        leftPanel={
-          <ActionMenuPanel
-            catalogItems={catalogItems}
-            interactionMode={interactionMode}
-            onSelectTool={handleSelectTool}
-            onSelectMode={handleSelectMode}
-            onErase={handleBatchErase}
-          />
-        }
+        // Nuevas props pasadas hacia el grid:
+        catalogItems={catalogItems}
+        interactionMode={interactionMode}
+        onSelectTool={handleSelectTool}
+        onSelectMode={handleSelectMode}
+        onErase={handleBatchErase}
       />
 
       <ToothInfoModal

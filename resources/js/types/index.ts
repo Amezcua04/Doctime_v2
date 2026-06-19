@@ -296,3 +296,8 @@ export interface Condition {
   surface: Surface | 'general' | null;
   catalog_item: CatalogItem;
 }
+
+export interface SelectionZone {
+  tooth_number: number;
+  surface: Surface | 'general';
+}

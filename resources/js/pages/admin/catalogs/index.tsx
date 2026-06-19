@@ -80,15 +80,15 @@ export default function ClinicalCatalogIndex({ items, categories, filters }: Pro
 
   return (
     <>
-      <Head title="Catálogo del Odontograma" />
+      <Head title="Catálogo del odontograma" />
       <div className="flex h-[calc(100vh-6rem)] flex-col gap-6 p-4 md:p-6 lg:p-4">
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Catálogo clínico</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">Catálogo clínico</h1>
             <p className="text-sm text-muted-foreground">Gestiona condiciones, lesiones y tratamientos para el odontograma.</p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-4 sm:mt-0">
             <Button
               variant="outline"
               onClick={() => setIsCategoryModalOpen(true)}
@@ -105,104 +105,112 @@ export default function ClinicalCatalogIndex({ items, categories, filters }: Pro
           </div>
         </div>
 
-        <Card className="border-border shadow-sm overflow-hidden flex-1 flex flex-col">
-          <CardHeader className="border-b px-4 py-3 shrink-0">
+        <Card className="shadow-sm overflow-hidden pb-0">
+          <CardHeader className="px-4 pb-0">
             <div className="flex w-full items-center">
               <div className="relative w-full max-w-sm">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Buscar condición..."
-                  className="pl-9 bg-background"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
+                  className="pl-9 bg-background"
                 />
               </div>
             </div>
           </CardHeader>
 
-          <CardContent className="p-0 flex-1 overflow-auto">
+          <CardContent className="p-0">
             {items.data.length === 0 ? (
-              <div className="flex h-full flex-col items-center justify-center py-12 text-center text-muted-foreground">
+              <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
                 <div className="rounded-full bg-muted p-4 mb-3">
-                  <Tag className="h-8 w-8 opacity-50" />
+                  <Layers className="h-8 w-8 opacity-50" />
                 </div>
                 <h3 className="text-lg font-medium text-foreground">No se encontraron ítems</h3>
                 <p className="text-sm">Agrega nuevas condiciones o tratamientos para comenzar.</p>
+                {search && (
+                  <Button variant="link" onClick={() => setSearch('')} className="mt-2 cursor-pointer">
+                    Limpiar búsqueda
+                  </Button>
+                )}
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[100px]">Ícono</TableHead>
-                    <TableHead>
-                      <Button variant="ghost" className="cursor-pointer hover:text-primary transition-colors px-0" onClick={() => handleSort('name')}>
-                        Nombre <SortIcon field="name" />
-                      </Button>
-                    </TableHead>
-                    <TableHead>
-                      <Button variant="ghost" className="cursor-pointer hover:text-primary transition-colors px-0" onClick={() => handleSort('type')}>
-                        Tipo <SortIcon field="type" />
-                      </Button>
-                    </TableHead>
-                    <TableHead>Categoría</TableHead>
-                    <TableHead className="text-right">
-                      <Button variant="ghost" className="cursor-pointer hover:text-primary transition-colors px-0" onClick={() => handleSort('default_cost')}>
-                        Costo base <SortIcon field="default_cost" />
-                      </Button>
-                    </TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {items.data.map((item) => {
-                    const visual = getTypeVisuals(item.type);
-                    return (
-                      <TableRow key={item.id}>
-                        <TableCell>
-                          <div className="h-10 w-10 rounded-md border flex items-center justify-center bg-slate-50 dark:bg-slate-900">
-                            {item.image_path ? (
-                              <img src={`/storage/${item.image_path}`} alt={item.name} className="h-6 w-6 object-contain" />
-                            ) : (
-                              <ImageIcon className="h-4 w-4 text-muted-foreground/50" />
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="font-medium text-foreground">{item.name}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={`flex w-fit items-center ${visual.color}`}>
-                            {visual.icon} {visual.label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {item.type === 'treatment' ? (item.category?.name || 'Sin categoría') : '-'}
-                        </TableCell>
-                        <TableCell className="text-right font-medium">
-                          {item.type === 'treatment' ? `$${Number(item.default_cost).toFixed(2)}` : '-'}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-1">
-                            <ActionTooltip label="Editar">
-                              <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-yellow-600 hover:bg-yellow-50 cursor-pointer" onClick={() => openEditModal(item)}>
-                                <Edit2 className="h-4 w-4" />
-                              </Button>
-                            </ActionTooltip>
-                            <ActionTooltip label="Eliminar" variant="destructive">
-                              <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-red-600 hover:bg-red-50 cursor-pointer" onClick={() => handleDelete(item)}>
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </ActionTooltip>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[100px]">Ícono</TableHead>
+                      <TableHead
+                        className="w-75 cursor-pointer hover:text-primary transition-colors"
+                        onClick={() => handleSort('name')}
+                      >
+                        <div className="flex items-center">Nombre <SortIcon field="name" /></div>
+                      </TableHead>
+                      <TableHead>
+                        <Button variant="ghost" className="cursor-pointer hover:text-primary transition-colors px-0" onClick={() => handleSort('type')}>
+                          Tipo <SortIcon field="type" />
+                        </Button>
+                      </TableHead>
+                      <TableHead>Categoría</TableHead>
+                      <TableHead className="text-right">
+                        <Button variant="ghost" className="cursor-pointer hover:text-primary transition-colors px-0" onClick={() => handleSort('default_cost')}>
+                          Costo base <SortIcon field="default_cost" />
+                        </Button>
+                      </TableHead>
+                      <TableHead className="text-right">Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {items.data.map((item) => {
+                      const visual = getTypeVisuals(item.type);
+                      return (
+                        <TableRow key={item.id}>
+                          <TableCell>
+                            <div className="h-10 w-10 rounded-md border flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+                              {item.image_path ? (
+                                <img src={`/storage/${item.image_path}`} alt={item.name} className="h-6 w-6 object-contain" />
+                              ) : (
+                                <ImageIcon className="h-4 w-4 text-muted-foreground/50" />
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-medium text-foreground">{item.name}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className={`flex w-fit items-center ${visual.color}`}>
+                              {visual.icon} {visual.label}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">
+                            {item.type === 'treatment' ? (item.category?.name || 'Sin categoría') : '-'}
+                          </TableCell>
+                          <TableCell className="text-right font-medium">
+                            {item.type === 'treatment' ? `$${Number(item.default_cost).toFixed(2)}` : '-'}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-1">
+                              <ActionTooltip label="Editar">
+                                <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-yellow-600 hover:bg-yellow-50 cursor-pointer" onClick={() => openEditModal(item)}>
+                                  <Edit2 className="h-4 w-4" />
+                                </Button>
+                              </ActionTooltip>
+                              <ActionTooltip label="Eliminar" variant="destructive">
+                                <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-red-600 hover:bg-red-50 cursor-pointer" onClick={() => handleDelete(item)}>
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </ActionTooltip>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
             )}
           </CardContent>
 
           {items.data.length > 0 && (
-            <CardFooter className="border-t py-4 flex justify-center shrink-0">
+            <CardFooter className="border-t [.border-t]:pt-2 py-2 flex justify-center">
               <Pagination links={items.links} />
             </CardFooter>
           )}

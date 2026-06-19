@@ -111,7 +111,7 @@ export default function ServicesIndex({ services, filters }: Props) {
           </Button>
         </div>
 
-        <Card className="border-border shadow-sm overflow-hidden">
+        <Card className="shadow-sm overflow-hidden pb-0">
           <CardHeader className="border-b px-4 py-3">
             <div className="flex w-full items-center">
               <div className="relative w-full max-w-sm">
@@ -235,7 +235,7 @@ export default function ServicesIndex({ services, filters }: Props) {
           </CardContent>
 
           {services.data.length > 0 && (
-            <CardFooter className="border-t py-4 flex justify-center">
+            <CardFooter className="border-t [.border-t]:pt-2 py-2 flex justify-center">
               <Pagination links={services.links} />
             </CardFooter>
           )}

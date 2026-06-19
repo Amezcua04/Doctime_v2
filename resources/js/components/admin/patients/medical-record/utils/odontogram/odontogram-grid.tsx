@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Activity, PanelRightClose, PanelRightOpen, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
-import { OdontogramItemState, Surface } from '@/types';
+import { CatalogItem, OdontogramItemState, SelectionZone, Surface } from '@/types';
 import { ToolsPanel } from './tools-panel';
 import { InteractiveTooth } from './interactive-tooth';
+import { ActionMenuPanel } from './action-menu-panel'; // <-- Inyectado directamente
 
 const PERMANENT = {
   upperRight: [18, 17, 16, 15, 14, 13, 12, 11],
@@ -22,14 +23,29 @@ const TEMPORARY = {
 
 interface OdontogramGridProps {
   items: OdontogramItemState[];
-  selectedZones: { tooth_number: number, surface: Surface | 'general' }[];
+  selectedZones: SelectionZone[];
   onSurfaceClick: (toothNumber: number, surface: Surface | 'general') => void;
-  leftPanel: React.ReactNode;
+  catalogItems: CatalogItem[];
+  interactionMode: 'select' | 'info';
+  onSelectTool: (tool: CatalogItem) => void;
+  onSelectMode: (mode: 'select' | 'info') => void;
+  onErase: () => void;
 }
 
-export const OdontogramGrid = ({ items, selectedZones, onSurfaceClick, leftPanel }: OdontogramGridProps) => {
+export const OdontogramGrid = ({
+  items,
+  selectedZones,
+  onSurfaceClick,
+  catalogItems,
+  interactionMode,
+  onSelectTool,
+  onSelectMode,
+  onErase
+}: OdontogramGridProps) => {
   const [activeTab, setActiveTab] = useState('permanente');
-  const [activeSidePanel, setActiveSidePanel] = useState<'left' | 'right' | null>(null);
+  const [activeSidePanel, setActiveSidePanel] = useState<'left' | 'right' | null>(
+    typeof window !== 'undefined' && window.innerWidth > 1024 ? 'left' : null
+  );
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [activeTypeFilter, setActiveTypeFilter] = useState<'lesion' | 'treatment' | 'preexistence' | null>(null);
 
@@ -104,61 +120,81 @@ export const OdontogramGrid = ({ items, selectedZones, onSurfaceClick, leftPanel
         </div>
       </div>
 
-      <div className="flex relative">
-
-        {/* Botón flotante izquierdo */}
-        <div className="absolute top-4 left-4 z-20">
-          <Button
-            variant="outline"
-            size="icon"
-            className={`w-8 h-8 rounded-full shadow-md transition-all duration-300 cursor-pointer ${activeSidePanel === 'left' ? 'bg-primary/10 border-primary text-primary' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'}`}
-            onClick={toggleLeftPanel}
-            title="Herramientas del Odontograma"
-          >
-            {activeSidePanel === 'left' ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
-          </Button>
-        </div>
+      <div className="flex flex-col lg:flex-row relative">
 
         {/* Panel izquierdo */}
-        {activeSidePanel === 'left' && leftPanel}
+        {activeSidePanel === 'left' && (
+          <div className="w-full lg:w-60 shrink-0 border-t lg:border-t-0 lg:border-l border-border bg-slate-50/30 dark:bg-slate-900/30 max-h-[50vh] lg:max-h-none overflow-y-auto custom-scrollbar animate-in slide-in-from-bottom-2 lg:slide-in-from-right-2">
+            <ActionMenuPanel
+              catalogItems={catalogItems}
+              interactionMode={interactionMode}
+              onSelectTool={onSelectTool}
+              onSelectMode={onSelectMode}
+              onErase={onErase}
+            />
+          </div>
+        )}
 
-        {/* Botón flotante derecho */}
-        <div className="absolute top-4 right-4 z-20">
-          <Button
-            variant="outline"
-            size="icon"
-            className={`w-8 h-8 rounded-full shadow-md transition-all duration-300 cursor-pointer ${activeSidePanel === 'right' ? 'bg-primary/10 border-primary text-primary' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'}`}
-            onClick={toggleRightPanel}
-            title="Filtros del Odontograma"
-          >
-            {activeSidePanel === 'right' ? <PanelRightClose className="w-4 h-4" /> : <PanelRightOpen className="w-4 h-4" />}
-          </Button>
-        </div>
+        <div className="flex-1 relative flex flex-col min-h-[500px] overflow-hidden">
 
-        {/* Odontograma */}
-        <div className="flex-1 flex justify-center overflow-x-auto custom-scrollbar p-4 sm:p-6 pb-8 pt-8 min-h-[500px]">
-          <div className="min-w-[700px] flex flex-col justify-center items-center gap-12">
-            <div className="flex gap-4 sm:gap-6 items-end">
-              {renderQuadrant(layout.upperRight, true)}
-              <div className="w-px h-32 bg-slate-300 dark:bg-slate-700 shrink-0" />
-              {renderQuadrant(layout.upperLeft, true)}
-            </div>
-            <div className="flex gap-4 sm:gap-6 items-start">
-              {renderQuadrant(layout.lowerRight, false)}
-              <div className="w-px h-32 bg-slate-300 dark:bg-slate-700 shrink-0" />
-              {renderQuadrant(layout.lowerLeft, false)}
+          {/* Botón flotante izquierdo */}
+          <div className="absolute top-4 left-4 z-20">
+            <Button
+              variant="outline"
+              size="icon"
+              className={`w-8 h-8 rounded-full shadow-md transition-all duration-300 cursor-pointer ${activeSidePanel === 'left' ? 'bg-primary/10 border-primary text-primary' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'}`}
+              onClick={toggleLeftPanel}
+              title="Herramientas del Odontograma"
+            >
+              {activeSidePanel === 'left' ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
+            </Button>
+          </div>
+
+          {/* Botón flotante derecho */}
+          <div className="absolute top-4 right-4 z-20">
+            <Button
+              variant="outline"
+              size="icon"
+              className={`w-8 h-8 rounded-full shadow-md transition-all duration-300 cursor-pointer ${activeSidePanel === 'right' ? 'bg-primary/10 border-primary text-primary' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'}`}
+              onClick={toggleRightPanel}
+              title="Filtros del Odontograma"
+            >
+              {activeSidePanel === 'right' ? <PanelRightClose className="w-4 h-4" /> : <PanelRightOpen className="w-4 h-4" />}
+            </Button>
+          </div>
+
+          <div className="w-full h-full overflow-auto custom-scrollbar">
+
+            <div className="flex min-w-max min-h-full p-6 pt-20 lg:pt-6">
+
+              <div className="m-auto flex flex-col justify-center items-center gap-12">
+                <div className="flex gap-4 sm:gap-6 items-end">
+                  {renderQuadrant(layout.upperRight, true)}
+                  <div className="w-px h-32 bg-slate-300 dark:bg-slate-700 shrink-0" />
+                  {renderQuadrant(layout.upperLeft, true)}
+                </div>
+                <div className="flex gap-4 sm:gap-6 items-start">
+                  {renderQuadrant(layout.lowerRight, false)}
+                  <div className="w-px h-32 bg-slate-300 dark:bg-slate-700 shrink-0" />
+                  {renderQuadrant(layout.lowerLeft, false)}
+                </div>
+              </div>
+
             </div>
           </div>
+
         </div>
 
         {/* Panel derecho */}
         {activeSidePanel === 'right' && (
-          <ToolsPanel
-            activeFilter={activeFilter}
-            onFilterToggle={handleFilterToggle}
-            activeTypeFilter={activeTypeFilter}
-            onTypeFilterToggle={handleTypeFilterToggle}
-          />
+          <div className="w-full lg:w-60 shrink-0 border-t lg:border-t-0 lg:border-l border-border bg-slate-50/30 dark:bg-slate-900/30 max-h-[50vh] lg:max-h-none overflow-y-auto custom-scrollbar animate-in slide-in-from-bottom-2 lg:slide-in-from-right-2">
+            <ToolsPanel
+              activeFilter={activeFilter}
+              onFilterToggle={handleFilterToggle}
+              activeTypeFilter={activeTypeFilter}
+              onTypeFilterToggle={handleTypeFilterToggle}
+            />
+          </div>
         )}
 
       </div>

@@ -185,7 +185,7 @@ export default function PatientsIndex({ patients, filters }: IndexProps) {
                   <TableHeader>
                     <TableRow>
                       <TableHead
-                        className="w-[300px] cursor-pointer hover:text-primary transition-colors"
+                        className="w-75 cursor-pointer hover:text-primary transition-colors"
                         onClick={() => handleSort('name')}
                       >
                         <div className="flex items-center">Paciente <SortIcon field="name" /></div>
@@ -280,7 +280,7 @@ export default function PatientsIndex({ patients, filters }: IndexProps) {
           </CardContent>
 
           {patients.data.length > 0 && (
-            <CardFooter className="border-t py-2 flex justify-center">
+            <CardFooter className="border-t [.border-t]:pt-2 py-2 flex justify-center">
               <Pagination links={patients.links} />
             </CardFooter>
           )}

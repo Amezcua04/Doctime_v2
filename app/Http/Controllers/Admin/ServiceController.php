@@ -28,7 +28,7 @@ class ServiceController extends Controller
             $query->orderBy($sort, $direction === 'desc' ? 'desc' : 'asc');
         }
 
-        $services = $query->paginate(8)->withQueryString();
+        $services = $query->paginate(7)->withQueryString();
 
         return Inertia::render('admin/services/index', [
             'services' => $services,

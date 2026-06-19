@@ -13,7 +13,6 @@ import {
   Users,
   ShieldCheck
 } from 'lucide-react';
-import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -24,7 +23,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Pagination } from '@/components/shared/pagination';
 import { StaffModal } from '@/components/admin/staff/staff-modal';
-import { DeleteModal } from '@/components/shared/delete-modal'; // <-- Importamos tu componente reutilizable
+import { DeleteModal } from '@/components/shared/delete-modal';
 import { ActionTooltip } from '@/components/shared/action-tooltip';
 
 type StaffIndexProps = {
@@ -246,7 +245,7 @@ export default function StaffIndex({ users, roles, doctors, filters }: StaffInde
                   <TableHeader>
                     <TableRow>
                       <TableHead
-                        className="w-[300px] cursor-pointer hover:text-primary transition-colors"
+                        className="w-75 cursor-pointer hover:text-primary transition-colors"
                         onClick={() => handleSort('name')}
                       >
                         <div className="flex items-center">
@@ -311,7 +310,7 @@ export default function StaffIndex({ users, roles, doctors, filters }: StaffInde
           </CardContent>
 
           {users.data.length > 0 && (
-            <CardFooter className="border-t py-0 flex justify-center">
+            <CardFooter className="border-t [.border-t]:pt-2 py-2 flex justify-center">
               <Pagination links={users.links} />
             </CardFooter>
           )}

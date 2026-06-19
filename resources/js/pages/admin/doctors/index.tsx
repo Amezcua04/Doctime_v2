@@ -119,7 +119,7 @@ export default function DoctorsIndex({ doctors, specialties, filters }: DoctorsI
           </Button>
         </div>
 
-        <Card className="shadow-sm overflow-hidden py-4">
+        <Card className="shadow-sm overflow-hidden pb-0">
           <CardHeader className="px-4 pb-0">
             <div className="flex w-full items-center">
               <div className="relative w-full max-w-sm">
@@ -267,7 +267,7 @@ export default function DoctorsIndex({ doctors, specialties, filters }: DoctorsI
           </CardContent>
 
           {doctors.data.length > 0 && (
-            <CardFooter className="border-t py-2 flex justify-center">
+            <CardFooter className="border-t [.border-t]:pt-2 py-2 flex justify-center">
               <Pagination links={doctors.links} />
             </CardFooter>
           )}

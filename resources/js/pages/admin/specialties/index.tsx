@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Plus, Search, ArrowUpDown, ArrowUp, ArrowDown, Edit2, Stethoscope, Palette, AlignLeft, Award } from 'lucide-react';
+import { Trash2, Plus, Search, ArrowUpDown, ArrowUp, ArrowDown, Edit2, Stethoscope, Palette, AlignLeft, Award, BriefcaseMedical } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Specialty } from '@/types';
 import { Pagination } from '@/components/shared/pagination';
@@ -111,9 +111,9 @@ export default function SpecialtiesIndex({ specialties, filters }: Props) {
       <Head title="Directorio de especialidades" />
       <div className="flex h-[calc(100vh-6rem)] flex-col gap-6 p-4 md:p-6 lg:p-4">
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Directorio de especialidades</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">Directorio de especialidades</h1>
             <p className="text-sm text-muted-foreground">Gestiona las ramas médicas asignables a los doctores.</p>
           </div>
           <Button onClick={openCreateModal} className="w-full sm:w-auto shadow-sm cursor-pointer">
@@ -121,16 +121,16 @@ export default function SpecialtiesIndex({ specialties, filters }: Props) {
           </Button>
         </div>
 
-        <Card className="border-border shadow-sm overflow-hidden">
-          <CardHeader className="border-b px-4 py-3">
+        <Card className="shadow-sm overflow-hidden pb-0">
+          <CardHeader className="px-4 pb-0">
             <div className="flex w-full items-center">
               <div className="relative w-full max-w-sm">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Buscar especialidad..."
-                  className="pl-9 bg-background"
                   value={search}
                   onChange={handleSearchChange}
+                  className="pl-9 bg-background"
                 />
               </div>
             </div>
@@ -140,7 +140,7 @@ export default function SpecialtiesIndex({ specialties, filters }: Props) {
             {specialties.data.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
                 <div className="rounded-full bg-muted p-4 mb-3">
-                  <Award className="h-8 w-8 opacity-50" />
+                  <BriefcaseMedical className="h-8 w-8 opacity-50" />
                 </div>
                 <h3 className="text-lg font-medium text-foreground">No se encontraron especialidades</h3>
                 <p className="text-sm">Agrega ramas médicas para comenzar.</p>
@@ -150,7 +150,7 @@ export default function SpecialtiesIndex({ specialties, filters }: Props) {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[30%]">
+                      <TableHead className="w-[30%] cursor-pointer hover:text-primary transition-colors">
                         <Button variant="ghost" className="cursor-pointer hover:text-primary transition-colors" onClick={() => handleSort('name')}>
                           Nombre de especialidad <SortIcon field="name" />
                         </Button>
@@ -168,13 +168,13 @@ export default function SpecialtiesIndex({ specialties, filters }: Props) {
                   </TableHeader>
                   <TableBody>
                     {specialties.data.map((specialty) => (
-                      <TableRow key={specialty.id}>
-                        <TableCell className="font-medium">
+                      <TableRow key={specialty.id} className="hover:bg-muted/50">
+                        <TableCell>
                           <div className="flex items-center gap-3">
                             <div className="h-8 w-8 rounded-full flex items-center justify-center" style={{ backgroundColor: `${specialty.color}20`, color: specialty.color }}>
                               <Stethoscope className="h-4 w-4" />
                             </div>
-                            <span className="text-foreground">{specialty.name}</span>
+                            <span className="font-semibold text-foreground">{specialty.name}</span>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -222,7 +222,7 @@ export default function SpecialtiesIndex({ specialties, filters }: Props) {
           </CardContent>
 
           {specialties.data.length > 0 && (
-            <CardFooter className="border-t py-4 flex justify-center">
+            <CardFooter className="border-t [.border-t]:pt-2 py-2 flex justify-center">
               <Pagination links={specialties.links} />
             </CardFooter>
           )}

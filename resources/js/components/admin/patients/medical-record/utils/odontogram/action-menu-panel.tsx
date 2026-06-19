@@ -34,10 +34,12 @@ export const ActionMenuPanel = ({ catalogItems, interactionMode, onSelectTool, o
   }, [treatments, search]);
 
   return (
-    <div className="p-4 lg:py-0 lg:px-0 bg-slate-50/50 dark:bg-slate-900/20 flex flex-col items-center justify-start animate-in fade-in slide-in-from-right-4 duration-300 relative w-60 max-h-125 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700">
+    // Se quitaron las clases de width fijo (w-60) y se igualaron las clases de padding (p-4 lg:py-4 lg:px-0) 
+    // y altura máxima (max-h-125) para que coincidan exactamente con ToolsPanel
+    <div className="p-4 lg:py-4 lg:px-0 bg-slate-50/50 dark:bg-slate-900/20 flex flex-col items-center justify-start animate-in fade-in slide-in-from-right-4 duration-300 relative w-full h-full max-h-125 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700">
 
       {view === 'main' && (
-        <div className="flex flex-col py-4 w-full">
+        <div className="flex flex-col w-full space-y-2">
           <div className="px-6 mb-2">
             <h4 className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">Herramientas</h4>
           </div>
@@ -57,7 +59,9 @@ export const ActionMenuPanel = ({ catalogItems, interactionMode, onSelectTool, o
             <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 transition-transform" />
           </div>
 
-          <div className="w-full h-px bg-border my-4" />
+          <div className="w-full flex justify-center py-2">
+             <div className="w-2/3 h-px bg-border" />
+          </div>
 
           {/* Botón ver información */}
           <div
