@@ -34,7 +34,7 @@ class ClinicalCatalogController extends Controller
             $query->orderBy($sort, $direction === 'desc' ? 'desc' : 'asc');
         }
 
-        $items = $query->paginate(8)->withQueryString();
+        $items = $query->paginate(7)->withQueryString();
 
         return Inertia::render('admin/catalogs/index', [
             'items' => $items,
