@@ -8,7 +8,6 @@ import { User, Patient, Service, PaymentMethod, RawAppointmentEvent, CalendarEve
 import { toast } from 'sonner';
 import { useEcho } from '@laravel/echo-react';
 import { DoctorFilter } from '@/components/admin/appointments/doctor-filter';
-import { Card, CardContent } from '@/components/ui/card';
 import { BillingModal } from '@/components/admin/appointments/billing-modal';
 
 interface Props {
@@ -40,7 +39,6 @@ export default function AppointmentsIndex({ events, patients, doctors, services,
   const [localEvents, setLocalEvents] = useState<CalendarEvent[]>([]);
 
   useEffect(() => {
-    // Aquí recibimos los eventos iniciales de Inertia (los cuales ya traen patient y doctor con color)
     const formattedEvents = events.map(event => ({
       ...event,
       start: forceExactTime(event.start as any),
@@ -70,16 +68,13 @@ export default function AppointmentsIndex({ events, patients, doctors, services,
     'appointments',
     '.appointment.updated',
     (e: any) => {
-      const { action, appointment, causedByUserId, message } = e;
+      const { action, appointment, causedByUserId } = e;
 
       const currentUserId = auth.user.id;
-      const isMyAction = causedByUserId === currentUserId;
       const isRelevant = doctors.some(doc => String(doc.id) === String(appointment.doctor_id));
 
       if (!isRelevant) return;
 
-      // ACTUALIZACIÓN CLAVE: Mapeamos los datos del WebSocket para que incluyan al patient y al doctor.
-      // Si el WebSocket no los manda anidados, los construimos cruzando con la prop `doctors` y `patients` locales.
       const relatedDoctor = doctors.find(d => String(d.id) === String(appointment.doctor_id));
       const relatedPatient = patients.find(p => String(p.id) === String(appointment.patient_id));
 
@@ -89,12 +84,8 @@ export default function AppointmentsIndex({ events, patients, doctors, services,
         start: forceExactTime(appointment.start_time || appointment.start),
         end: forceExactTime(appointment.end_time || appointment.end),
         status: appointment.status,
-        
-        // --- INYECCIÓN DE COLORES Y NOMBRES EN TIEMPO REAL ---
         patient: appointment.patient || (relatedPatient ? { id: relatedPatient.id, name: relatedPatient.name } : null),
         doctor: appointment.doctor || (relatedDoctor ? { id: relatedDoctor.id, name: relatedDoctor.name, color: relatedDoctor.color } : null),
-        // ---------------------------------------------------
-
         services: appointment.services || [],
         payments: appointment.payments || [],
         total: appointment.total,
@@ -124,9 +115,7 @@ export default function AppointmentsIndex({ events, patients, doctors, services,
 
       setSelectedEvent((prevSelected) => {
         if (!prevSelected || prevSelected.id !== processedEvent.id) return prevSelected;
-
         if (action === 'deleted') return null;
-
         return processedEvent;
       });
     }
@@ -165,35 +154,30 @@ export default function AppointmentsIndex({ events, patients, doctors, services,
       <Head title="Agenda" />
       <div className="flex h-[calc(100vh-6rem)] flex-col gap-6 p-4 md:p-6 lg:p-4">
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Agenda médica</h1>
-            <p className="text-sm text-muted-foreground">Gestiona y programa las consultas en tiempo real.</p>
-          </div>
-          <Button
-            onClick={handleNewAppointment}
-            className="w-full sm:w-auto shadow-sm cursor-pointer"
-          >
-            <Plus className="mr-2 h-4 w-4" /> Nueva cita
-          </Button>
-        </div>
+        <div className="flex-1 bg-white dark:bg-slate-900 rounded-[24px] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col min-h-0">
+          <AppointmentCalendar
+            events={filteredEvents}
+            onSelectSlot={handleSelectSlot}
+            onSelectEvent={handleSelectEvent}
+            toolbarAction={
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Button
+                  onClick={handleNewAppointment}
+                  className="rounded-full shadow-none hover:shadow-sm transition-all px-3 sm:px-4 h-9 bg-primary text-primary-foreground cursor-pointer"
+                >
+                  <Plus className="h-4 w-4 sm:mr-1.5" />
+                  <span className="hidden sm:inline font-medium">Crear cita</span>
+                </Button>
 
-        <Card className="flex flex-1 flex-col overflow-hidden border-border shadow-sm py-0">
-          <CardContent className="flex-1 p-0 m-0">
-            <AppointmentCalendar
-              events={filteredEvents}
-              onSelectSlot={handleSelectSlot}
-              onSelectEvent={handleSelectEvent}
-              toolbarAction={
                 <DoctorFilter
                   doctors={doctors}
                   selectedIds={selectedDoctorIds}
                   onChange={setSelectedDoctorIds}
                 />
-              }
-            />
-          </CardContent>
-        </Card>
+              </div>
+            }
+          />
+        </div>
 
         <AppointmentModal
           isOpen={isModalOpen}
