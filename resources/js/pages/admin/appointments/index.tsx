@@ -2,12 +2,8 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Head, usePage } from '@inertiajs/react';
 import AppointmentCalendar from '@/components/admin/appointments/big-calendar';
 import { AppointmentModal } from '@/components/admin/appointments/appointment-modal';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
 import { User, Patient, Service, PaymentMethod, RawAppointmentEvent, CalendarEvent } from '@/types';
-import { toast } from 'sonner';
 import { useEcho } from '@laravel/echo-react';
-import { DoctorFilter } from '@/components/admin/appointments/doctor-filter';
 import { BillingModal } from '@/components/admin/appointments/billing-modal';
 
 interface Props {
@@ -152,30 +148,18 @@ export default function AppointmentsIndex({ events, patients, doctors, services,
   return (
     <>
       <Head title="Agenda" />
-      <div className="flex h-[calc(100vh-6rem)] flex-col gap-6 p-4 md:p-6 lg:p-4">
 
-        <div className="flex-1 bg-white dark:bg-slate-900 rounded-[24px] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col min-h-0">
+      <div className="flex flex-col h-[calc(100dvh-5rem)] min-h-[600px] gap-4 p-2 md:p-4 lg:p-6 w-full max-w-[100vw] overflow-x-hidden">
+
+        <div className="flex-1 bg-white dark:bg-slate-900 rounded-[16px] md:rounded-[24px] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col min-h-0 overflow-hidden">
           <AppointmentCalendar
             events={filteredEvents}
             onSelectSlot={handleSelectSlot}
             onSelectEvent={handleSelectEvent}
-            toolbarAction={
-              <div className="flex items-center gap-2 sm:gap-3">
-                <Button
-                  onClick={handleNewAppointment}
-                  className="rounded-full shadow-none hover:shadow-sm transition-all px-3 sm:px-4 h-9 bg-primary text-primary-foreground cursor-pointer"
-                >
-                  <Plus className="h-4 w-4 sm:mr-1.5" />
-                  <span className="hidden sm:inline font-medium">Crear cita</span>
-                </Button>
-
-                <DoctorFilter
-                  doctors={doctors}
-                  selectedIds={selectedDoctorIds}
-                  onChange={setSelectedDoctorIds}
-                />
-              </div>
-            }
+            onNewAppointment={handleNewAppointment}
+            doctors={doctors}
+            selectedDoctorIds={selectedDoctorIds}
+            onDoctorFilterChange={setSelectedDoctorIds}
           />
         </div>
 
