@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AppointmentBillingController;
 use App\Http\Controllers\Admin\AppointmentController;
 use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\BudgetController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CheckoutController;
 use App\Http\Controllers\Admin\ClinicalCatalogController;
@@ -124,6 +125,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 Route::get('/contracts/{contract}/view', [PatientContractController::class, 'viewFile']);
                 Route::get('/contracts/{contract}/download', [PatientContractController::class, 'downloadFile']);
                 Route::post('/contracts/generate', [PatientContractController::class, 'generate'])->name('contracts.generate');
+
+                // Presupuestos
+                Route::post('/budgets', [BudgetController::class, 'store']);
+                Route::get('/budgets/{budget}/export', [BudgetController::class, 'export']);
+                Route::put('/budgets/{budget}', [BudgetController::class, 'update'])->name('budgets.update');
+                Route::delete('/budgets/{budget}', [BudgetController::class, 'destroy'])->name('budgets.destroy');
+                Route::post('/budgets/{budget}/send-email', [BudgetController::class, 'sendEmail'])->name('budgets.send-email');
+                Route::post('/budgets/{budget}/send-whatsapp', [BudgetController::class, 'sendWhatsApp'])->name('budgets.send-whatsapp');
             });
 
             // Agenda y finanzas operativas

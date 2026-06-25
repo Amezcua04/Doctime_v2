@@ -70,4 +70,9 @@ class Patient extends Model
     {
         return $this->hasOne(Odontogram::class);
     }
+
+    public function budgets(): HasMany
+    {
+        return $this->hasMany(Budget::class);
+    }
 }

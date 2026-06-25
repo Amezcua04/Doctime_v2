@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Activity, PanelRightClose, PanelRightOpen, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { CatalogItem, OdontogramItemState, SelectionZone, Surface } from '@/types';
 import { ToolsPanel } from './tools-panel';
 import { InteractiveTooth } from './interactive-tooth';
-import { ActionMenuPanel } from './action-menu-panel'; // <-- Inyectado directamente
+import { ActionMenuPanel } from './action-menu-panel';
 
 const PERMANENT = {
   upperRight: [18, 17, 16, 15, 14, 13, 12, 11],
@@ -43,11 +43,15 @@ export const OdontogramGrid = ({
   onErase
 }: OdontogramGridProps) => {
   const [activeTab, setActiveTab] = useState('permanente');
-  const [activeSidePanel, setActiveSidePanel] = useState<'left' | 'right' | null>(
-    typeof window !== 'undefined' && window.innerWidth > 1024 ? 'left' : null
-  );
+  const [activeSidePanel, setActiveSidePanel] = useState<'left' | 'right' | null>(null);
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [activeTypeFilter, setActiveTypeFilter] = useState<'lesion' | 'treatment' | 'preexistence' | null>(null);
+
+  useEffect(() => {
+    if (window.innerWidth > 1024) {
+      setActiveSidePanel('left');
+    }
+  }, []);
 
   const layout = activeTab === 'permanente' ? PERMANENT : TEMPORARY;
 
@@ -76,7 +80,7 @@ export const OdontogramGrid = ({
       {teethArray.map(num => {
         const filteredItems = items.filter(i =>
           i.tooth_number === num &&
-          (!activeTypeFilter || i.catalog_item.type === activeTypeFilter)
+          (!activeTypeFilter || i.catalog_item?.type === activeTypeFilter)
         );
 
         const surfacesForThisTooth = selectedZones

@@ -34,8 +34,6 @@ export const ActionMenuPanel = ({ catalogItems, interactionMode, onSelectTool, o
   }, [treatments, search]);
 
   return (
-    // Se quitaron las clases de width fijo (w-60) y se igualaron las clases de padding (p-4 lg:py-4 lg:px-0) 
-    // y altura máxima (max-h-125) para que coincidan exactamente con ToolsPanel
     <div className="p-4 lg:py-4 lg:px-0 bg-slate-50/50 dark:bg-slate-900/20 flex flex-col items-center justify-start animate-in fade-in slide-in-from-right-4 duration-300 relative w-full h-full max-h-125 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700">
 
       {view === 'main' && (

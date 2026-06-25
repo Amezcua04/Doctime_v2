@@ -4,30 +4,42 @@ import AppLayout from '@/layouts/app-layout';
 import {
   ArrowLeft,
   Syringe,
-  Smile,
+  Calculator,
   ClipboardList,
   Paperclip,
   FileSignature
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CatalogItem, Patient, ProgressNote, Template } from '@/types';
+import { Budget, CatalogItem, Patient, Template } from '@/types';
 import { ClinicalHistoryTab } from '@/components/admin/patients/medical-record/clinical-history-tab';
 import { PatientHeader } from '@/components/admin/patients/medical-record/utils/patient-header';
 import { AttachmentsTab } from '@/components/admin/patients/medical-record/attachments-tab';
 import { ContractsTab } from '@/components/admin/patients/medical-record/contracts-tab';
-import { OrthodonticProgress } from '@/components/admin/patients/medical-record/utils/orthodontic-progress';
 import { OdontogramTab } from '@/components/admin/patients/medical-record/odontogram-tab';
+import { BudgetsTab } from '@/components/admin/patients/medical-record/budgets-tab';
 
 interface Props {
   patient: Patient & {
-    orthodontic_notes?: ProgressNote[];
+    contracts?: any[];
     odontogram_items?: any[];
   };
+  budgets: any;
+  filters?: any;
+  odontogramId?: number;
+  initialItems: any[];
   templates: Template[];
   catalogItems: CatalogItem[];
 }
 
-export default function MedicalRecordIndex({ patient, templates, catalogItems }: Props) {
+export default function MedicalRecordIndex({
+  patient,
+  budgets,
+  filters,
+  odontogramId,
+  initialItems,
+  templates,
+  catalogItems
+}: Props) {
   return (
     <>
       <Head title={`Expediente: ${patient.name}`} />
@@ -53,22 +65,22 @@ export default function MedicalRecordIndex({ patient, templates, catalogItems }:
                 <span className="hidden sm:block truncate">Odontograma</span>
               </TabsTrigger>
 
-              <TabsTrigger value="orthodontic" className="flex items-center justify-center px-3 py-0 min-w-12">
-                <Smile className="h-4 w-4 shrink-0" />
-                <span className="hidden sm:block truncate">Ortodoncia</span>
+              <TabsTrigger value="budgets" className="flex items-center justify-center gap-2 px-3 py-0 min-w-12">
+                <Calculator className="h-4 w-4 shrink-0" />
+                <span className="hidden sm:block truncate">Presupuestos</span>
               </TabsTrigger>
 
-              <TabsTrigger value="clinical_history" className="flex items-center justify-center px-3 py-0 min-w-12">
+              <TabsTrigger value="clinical_history" className="flex items-center justify-center gap-2 px-3 py-0 min-w-12">
                 <ClipboardList className="h-4 w-4 shrink-0" />
                 <span className="hidden sm:block truncate">Historia clínica</span>
               </TabsTrigger>
 
-              <TabsTrigger value="attachments" className="flex items-center justify-center px-3 py-0 min-w-12">
+              <TabsTrigger value="attachments" className="flex items-center justify-center gap-2 px-3 py-0 min-w-12">
                 <Paperclip className="h-4 w-4 shrink-0" />
                 <span className="hidden sm:block truncate">Anexos y estudios</span>
               </TabsTrigger>
 
-              <TabsTrigger value="contracts" className="flex items-center justify-center px-3 py-0 min-w-12">
+              <TabsTrigger value="contracts" className="flex items-center justify-center gap-2 px-3 py-0 min-w-12">
                 <FileSignature className="h-4 w-4 shrink-0" />
                 <span className="hidden sm:block truncate">Contratos y firmas</span>
               </TabsTrigger>
@@ -79,15 +91,17 @@ export default function MedicalRecordIndex({ patient, templates, catalogItems }:
           <TabsContent value="odontogram" className="space-y-6 mt-4 sm:mt-0">
             <OdontogramTab
               patientId={patient.id}
-              initialItems={patient.odontogram_items || []}
+              odontogramId={odontogramId || 0}
+              initialItems={initialItems || patient.odontogram_items || []}
               catalogItems={catalogItems}
             />
           </TabsContent>
 
-          <TabsContent value="orthodontic" className="space-y-6 mt-4 sm:mt-0">
-            <OrthodonticProgress
+          <TabsContent value="budgets" className="space-y-6 mt-4 sm:mt-0">
+            <BudgetsTab
               patientId={patient.id}
-              initialNotes={patient.orthodontic_notes || []}
+              budgets={budgets}
+              filters={filters}
             />
           </TabsContent>
 

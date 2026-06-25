@@ -301,3 +301,30 @@ export interface SelectionZone {
   tooth_number: number;
   surface: Surface | 'general';
 }
+
+export interface Budget {
+  id: number;
+  folio: string;
+  created_at: string;
+  valid_until: string | null;
+  total: number;
+  status: 'draft' | 'sent' | 'accepted' | 'rejected';
+}
+
+export interface PaginationLink {
+  url: string | null;
+  label: string;
+  active: boolean;
+}
+
+export interface PaginatedBudgets {
+  data: Budget[];
+  current_page: number;
+  last_page: number;
+  prev_page_url: string | null;
+  next_page_url: string | null;
+  from: number;
+  to: number;
+  total: number;
+  links: PaginationLink[];
+}

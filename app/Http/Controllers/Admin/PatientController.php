@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePatientRequest;
 use App\Http\Requests\UpdatePatientRequest;
+use App\Models\Budget;
+use App\Models\CatalogItem;
+use App\Models\Odontogram;
 use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -79,7 +82,7 @@ class PatientController extends Controller
      */
     public function show(Patient $patient)
     {
-        //
+       //
     }
 
     /**

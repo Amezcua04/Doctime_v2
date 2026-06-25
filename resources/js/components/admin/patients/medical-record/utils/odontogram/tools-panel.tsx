@@ -86,7 +86,7 @@ export function ToolsPanel({ activeFilter, onFilterToggle, activeTypeFilter, onT
           {colorFilters.map((f) => {
             const isSelected = activeTypeFilter === f.type;
             return (
-              <ActionTooltip label={f.label}>
+              <ActionTooltip key={f.type} label={f.label}>
                 <div
                   key={f.type}
                   onClick={() => onTypeFilterToggle(f.type)}

@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Budget;
 use App\Models\CatalogItem;
 use App\Models\ContractTemplate;
 use App\Models\Patient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class ClinicalRecordController extends Controller
@@ -38,7 +40,7 @@ class ClinicalRecordController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Patient $patient)
+    public function show(Request $request, Patient $patient)
     {
         $patient->load([
             'medicalRecord.attachments',
@@ -58,10 +60,31 @@ class ClinicalRecordController extends Controller
 
         if (!$patient->odontogram) {
             $patient->odontogram()->create([
-                'doctor_id' => auth()->id()
+                'doctor_id' => Auth::id()
             ]);
             $patient->load('odontogram.items.catalogItem');
         }
+
+        $search = $request->input('search');
+        $sortField = $request->input('sortField', 'created_at');
+        $sortDirection = $request->input('sortDirection', 'desc');
+
+        $allowedSorts = ['folio', 'created_at', 'valid_until', 'total', 'status'];
+        if (!in_array($sortField, $allowedSorts)) {
+            $sortField = 'created_at';
+        }
+
+        $budgets = Budget::where('patient_id', $patient->id)
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('folio', 'like', "%{$search}%")
+                        ->orWhere('total', 'like', "%{$search}%")
+                        ->orWhere('status', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy($sortField, $sortDirection)
+            ->paginate(3)
+            ->withQueryString();
 
         $patient->odontogram_items = $patient->odontogram ? $patient->odontogram->items : [];
         $templates = ContractTemplate::where('is_active', true)->get(['id', 'title', 'type', 'content']);
@@ -71,6 +94,10 @@ class ClinicalRecordController extends Controller
             'patient' => $patient,
             'templates' => $templates,
             'catalogItems' => $catalogItems,
+            'budgets' => $budgets,
+            'odontogramId' => $patient->odontogram->id,
+            'initialItems' => $patient->odontogram_items,
+            'filters' => $request->only(['search', 'sortField', 'sortDirection']),
         ]);
     }
 

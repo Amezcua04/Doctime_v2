@@ -7,6 +7,7 @@ use App\Models\CatalogItem;
 use App\Models\OdontogramItem;
 use App\Models\Patient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OdontogramController extends Controller
 {
@@ -25,7 +26,7 @@ class OdontogramController extends Controller
         $catalogItem = CatalogItem::findOrFail($validated['catalog_item_id']);
 
         $odontogram = $patient->odontogram()->firstOrCreate([
-            'doctor_id' => auth()->id()
+            'doctor_id' => Auth::id()
         ]);
 
         foreach ($validated['zones'] as $zone) {

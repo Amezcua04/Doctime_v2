@@ -5,9 +5,11 @@ import { router } from '@inertiajs/react';
 import { OdontogramGrid } from './utils/odontogram/odontogram-grid';
 import { ActionMenuPanel } from './utils/odontogram/action-menu-panel';
 import { ToothInfoModal } from './utils/odontogram/tooth-info-modal';
+import { BudgetPanel } from './utils/odontogram/budget-panel';
 
 interface Props {
   patientId: number;
+  odontogramId: number;
   initialItems: OdontogramItemState[];
   catalogItems: CatalogItem[];
 }
@@ -19,11 +21,12 @@ interface SelectionZone {
   surface: Surface | 'general';
 }
 
-export const OdontogramTab = ({ patientId, initialItems, catalogItems }: Props) => {
+export const OdontogramTab = ({ patientId, odontogramId, initialItems, catalogItems }: Props) => {
   const [items, setItems] = useState<OdontogramItemState[]>(initialItems);
   const [interactionMode, setInteractionMode] = useState<InteractionMode>('select');
   const [selectedToothInfo, setSelectedToothInfo] = useState<number | null>(null);
   const [selectedZones, setSelectedZones] = useState<SelectionZone[]>([]);
+  const [showBudget, setShowBudget] = useState(false)
 
   useEffect(() => {
     setItems(initialItems);
@@ -113,6 +116,8 @@ export const OdontogramTab = ({ patientId, initialItems, catalogItems }: Props) 
     });
   };
 
+  const plannedItems = items.filter(item => item.status === 'planned');
+
   return (
     <div className={`transition-all duration-300 w-full h-full relative flex flex-col
       ${interactionMode === 'info' ? 'ring-4 ring-indigo-100 rounded-xl' : ''}
@@ -130,12 +135,10 @@ export const OdontogramTab = ({ patientId, initialItems, catalogItems }: Props) 
         </div>
       )}
 
-      {/* Contenedor responsivo para el grid. Permite scroll horizontal en móviles si el grid es muy ancho */}
       <OdontogramGrid
         items={items}
         selectedZones={selectedZones}
         onSurfaceClick={handleSurfaceClick}
-        // Nuevas props pasadas hacia el grid:
         catalogItems={catalogItems}
         interactionMode={interactionMode}
         onSelectTool={handleSelectTool}
@@ -149,6 +152,19 @@ export const OdontogramTab = ({ patientId, initialItems, catalogItems }: Props) 
         onClose={() => setSelectedToothInfo(null)}
         onDelete={handleDeleteSingleItem}
       />
+
+      {plannedItems.length > 0 && (
+        <div className="mt-8 border-t border-gray-200 pt-8">
+          <BudgetPanel
+            patientId={patientId}
+            odontogramId={odontogramId}
+            plannedItems={plannedItems}
+            catalogItems={catalogItems}
+            onSuccessSave={() => setShowBudget(false)}
+            onCancel={() => setShowBudget(false)}
+          />
+        </div>
+      )}
 
     </div>
   );
