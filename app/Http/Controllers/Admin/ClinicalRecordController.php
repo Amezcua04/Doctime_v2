@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Budget;
+use App\Models\BudgetDetail;
 use App\Models\CatalogItem;
 use App\Models\ContractTemplate;
 use App\Models\Patient;
@@ -65,6 +66,25 @@ class ClinicalRecordController extends Controller
             $patient->load('odontogram.items.catalogItem');
         }
 
+        // =========================================
+        // NUEVA LÓGICA: Bandera de Presupuestos Activos
+        // =========================================
+        // 1. Buscamos todos los IDs de tratamientos que están en presupuestos que NO han sido rechazados
+        $activeBudgetedIds = BudgetDetail::whereHas('budget', function ($q) use ($patient) {
+            $q->where('patient_id', $patient->id)
+              ->whereIn('status', ['draft', 'sent', 'accepted']);
+        })->whereNotNull('odontogram_item_id')
+          ->pluck('odontogram_item_id')
+          ->toArray();
+
+        // 2. Inyectamos la bandera dinámica a cada ítem del odontograma
+        if ($patient->odontogram) {
+            $patient->odontogram->items->each(function ($item) use ($activeBudgetedIds) {
+                $item->is_active_in_budget = in_array($item->id, $activeBudgetedIds);
+            });
+        }
+        // =========================================
+
         $search = $request->input('search');
         $sortField = $request->input('sortField', 'created_at');
         $sortDirection = $request->input('sortDirection', 'desc');
@@ -96,7 +116,7 @@ class ClinicalRecordController extends Controller
             'catalogItems' => $catalogItems,
             'budgets' => $budgets,
             'odontogramId' => $patient->odontogram->id,
-            'initialItems' => $patient->odontogram_items,
+            'initialItems' => $patient->odontogram_items, // Ya llevan la bandera is_active_in_budget
             'filters' => $request->only(['search', 'sortField', 'sortDirection']),
         ]);
     }

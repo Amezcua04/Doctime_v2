@@ -82,7 +82,6 @@ class BudgetController extends Controller
             'items.*.discount' => ['required', 'numeric', 'min:0'],
         ]);
 
-        // Envolver el flujo en una transacción de base de datos para evitar registros huérfanos
         $budget = DB::transaction(function () use ($validated) {
             $calculatedSubtotal = 0;
             $totalItemsDiscount = 0;
@@ -96,10 +95,7 @@ class BudgetController extends Controller
                 $calculatedSubtotal += $itemSubtotal;
                 $totalItemsDiscount += $item['discount'];
 
-                // Construcción dinámica del concepto descriptivo inmutable (Snapshot)
                 $concept = $item['name'];
-
-                // Usamos isset() o ?? para evitar errores de llaves no definidas en arreglos anidados
                 $toothNumber = $item['tooth_number'] ?? null;
                 $surface = $item['surface'] ?? null;
 
@@ -112,7 +108,6 @@ class BudgetController extends Controller
 
                 $detailsData[] = [
                     'catalog_item_id' => $item['catalog_item_id'],
-                    // Aplicamos el null coalescing operator aquí también
                     'odontogram_item_id' => $item['odontogram_item_id'] ?? null,
                     'concept' => $concept,
                     'quantity' => $item['quantity'],
@@ -144,6 +139,7 @@ class BudgetController extends Controller
             $budget->details()->createMany($detailsData);
             $folio = 'COT-' . date('Y') . '-' . str_pad($budget->id, 5, '0', STR_PAD_LEFT);
             $budget->update(['folio' => $folio]);
+
 
             return $budget;
         });

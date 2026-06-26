@@ -75,7 +75,6 @@ export const BudgetsTab = ({ patientId, budgets, filters }: Props) => {
     router.delete(`/admin/patients/${patientId}/budgets/${budgetToDelete.id}`, {
       preserveScroll: true,
       onSuccess: () => {
-        toast.success('Presupuesto eliminado correctamente');
         setBudgetToDelete(null);
       },
       onError: () => toast.error('No se pudo eliminar el presupuesto'),
@@ -90,7 +89,6 @@ export const BudgetsTab = ({ patientId, budgets, filters }: Props) => {
   const handleStatusChange = (budgetId: number, newStatus: string) => {
     router.put(`/admin/patients/${patientId}/budgets/${budgetId}`, { status: newStatus }, {
       preserveScroll: true,
-      onSuccess: () => toast.success('Estado actualizado correctamente'),
       onError: () => toast.error('No se pudo actualizar el estado'),
     });
   };
@@ -99,7 +97,6 @@ export const BudgetsTab = ({ patientId, budgets, filters }: Props) => {
     setSendingEmailId(budgetId);
     router.post(`/admin/patients/${patientId}/budgets/${budgetId}/send-email`, {}, {
       preserveScroll: true,
-      onSuccess: () => toast.success('Presupuesto enviado por correo electrónico'),
       onError: () => toast.error('Error al enviar el correo'),
       onFinish: () => setSendingEmailId(null),
     });
@@ -109,7 +106,6 @@ export const BudgetsTab = ({ patientId, budgets, filters }: Props) => {
     setSendingWhatsAppId(budgetId);
     router.post(`/admin/patients/${patientId}/budgets/${budgetId}/send-whatsapp`, {}, {
       preserveScroll: true,
-      onSuccess: () => toast.success('Presupuesto enviado por WhatsApp'),
       onError: () => toast.error('Error al enviar por WhatsApp'),
       onFinish: () => setSendingWhatsAppId(null),
     });

@@ -6,6 +6,8 @@ import { OdontogramGrid } from './utils/odontogram/odontogram-grid';
 import { ActionMenuPanel } from './utils/odontogram/action-menu-panel';
 import { ToothInfoModal } from './utils/odontogram/tooth-info-modal';
 import { BudgetPanel } from './utils/odontogram/budget-panel';
+import { Calculator } from 'lucide-react'; 
+import { Button } from '@/components/ui/button'; 
 
 interface Props {
   patientId: number;
@@ -26,10 +28,25 @@ export const OdontogramTab = ({ patientId, odontogramId, initialItems, catalogIt
   const [interactionMode, setInteractionMode] = useState<InteractionMode>('select');
   const [selectedToothInfo, setSelectedToothInfo] = useState<number | null>(null);
   const [selectedZones, setSelectedZones] = useState<SelectionZone[]>([]);
-  const [showBudget, setShowBudget] = useState(false)
+  
+  const [showBudget, setShowBudget] = useState(false);
+
+  // ✅ FILTRO ACTUALIZADO: Solo planificados que NO están en un presupuesto activo
+  const plannedItems = items.filter(item => 
+    item.status === 'planned' && !(item as any).is_active_in_budget
+  );
 
   useEffect(() => {
     setItems(initialItems);
+    
+    // ✅ SEGURIDAD ACTUALIZADA: Verifica la misma lógica de exclusión
+    const availablePlanned = initialItems.filter(item => 
+      item.status === 'planned' && !(item as any).is_active_in_budget
+    );
+
+    if (availablePlanned.length === 0) {
+      setShowBudget(false);
+    }
   }, [initialItems]);
 
   const handleSelectMode = (mode: InteractionMode) => {
@@ -76,8 +93,8 @@ export const OdontogramTab = ({ patientId, odontogramId, initialItems, catalogIt
       zones: validZones as any[],
     }, {
       preserveScroll: true,
+      preserveState: true,
       onSuccess: () => {
-        toast.success(`Aplicado en ${validZones.length} zona(s)`);
         setSelectedZones([]);
       },
     });
@@ -102,8 +119,8 @@ export const OdontogramTab = ({ patientId, odontogramId, initialItems, catalogIt
       ids: idsToDelete as any[],
     }, {
       preserveScroll: true,
+      preserveState: true,
       onSuccess: () => {
-        toast.success(`Se eliminaron ${idsToDelete.length} registro(s)`);
         setSelectedZones([]);
       },
     });
@@ -112,11 +129,9 @@ export const OdontogramTab = ({ patientId, odontogramId, initialItems, catalogIt
   const handleDeleteSingleItem = (itemId: number) => {
     router.delete(`/admin/patients/${patientId}/odontogram/items/${itemId}`, {
       preserveScroll: true,
-      onSuccess: () => toast.success('Elemento eliminado'),
+      preserveState: true,
     });
   };
-
-  const plannedItems = items.filter(item => item.status === 'planned');
 
   return (
     <div className={`transition-all duration-300 w-full h-full relative flex flex-col
@@ -154,15 +169,27 @@ export const OdontogramTab = ({ patientId, odontogramId, initialItems, catalogIt
       />
 
       {plannedItems.length > 0 && (
-        <div className="mt-8 border-t border-gray-200 pt-8">
-          <BudgetPanel
-            patientId={patientId}
-            odontogramId={odontogramId}
-            plannedItems={plannedItems}
-            catalogItems={catalogItems}
-            onSuccessSave={() => setShowBudget(false)}
-            onCancel={() => setShowBudget(false)}
-          />
+        <div className="mt-8 border-t border-gray-200 pt-8 animate-in fade-in duration-300">
+          {!showBudget ? (
+            <div className="flex flex-col items-center justify-center space-y-3 bg-muted/20 p-6 rounded-xl border border-dashed border-muted-foreground/30">
+              <p className="text-sm font-medium text-muted-foreground">
+                Tienes {plannedItems.length} tratamiento(s) sin presupuestar
+              </p>
+              <Button onClick={() => setShowBudget(true)} size="lg" className="shadow-sm">
+                <Calculator className="w-4 h-4 mr-2" />
+                Preparar Presupuesto
+              </Button>
+            </div>
+          ) : (
+            <BudgetPanel
+              patientId={patientId}
+              odontogramId={odontogramId}
+              plannedItems={plannedItems}
+              catalogItems={catalogItems}
+              onSuccessSave={() => setShowBudget(false)}
+              onCancel={() => setShowBudget(false)} 
+            />
+          )}
         </div>
       )}
 
