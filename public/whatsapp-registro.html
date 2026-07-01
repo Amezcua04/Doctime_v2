@@ -10,58 +10,59 @@
     
     <div class="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
         <h2 class="text-2xl font-bold mb-4 text-gray-800">Conectar WhatsApp</h2>
-        <p class="text-gray-600 mb-6 text-sm">Durante el proceso, cuando el asistente te pregunte, asegúrate de seleccionar la opción <strong>"Mantener la aplicación móvil"</strong> (Coexistencia).</p>
+        <p class="text-gray-600 mb-6 text-sm">Haz clic en el botón oficial de Meta abajo. Recuerda seleccionar la opción de <strong>Coexistencia</strong> cuando detecte tu número móvil.</p>
         
-        <button onclick="launchWhatsAppSignup()" class="w-full bg-[#1877F2] hover:bg-[#166FE5] text-white font-bold py-3 px-4 rounded transition duration-200">
-            Conectar Número con Meta
-        </button>
+        <div class="flex justify-center my-4">
+            <fb:login-button 
+                config_id="2214655339300500" 
+                onlogin="checkLoginState();"
+                scope="whatsapp_business_management,whatsapp_business_messaging"
+                size="large"
+                button-type="continue_with"
+                auth_type="reauthorize">
+            </fb:login-button>
+        </div>
 
-        <div id="status" class="mt-6 text-sm font-medium text-gray-500 hidden">
-            Esperando respuesta... Abre la consola (F12) para ver detalles.
+        <div id="status" class="mt-6 text-sm font-medium text-gray-500">
+            Esperando interacción... Abre la consola (F12) para validar las respuestas.
         </div>
     </div>
 
     <script>
-      // 1. Inicializar el SDK de Meta
+      // 1. Inicializar el SDK de Meta habilitando XFBML
       window.fbAsyncInit = function() {
         FB.init({
           appId            : '1710740677018215',
-          autoLogAppEvents : true,
-          xfbml            : true,
+          cookie           : true, // Habilita las cookies para que el servidor pueda acceder a la sesión
+          xfbml            : true, // ¡CRÍTICO! Permite que Meta renderice el botón nativo
           version          : 'v25.0'
         });
+        
+        // Fuerza el renderizado de los componentes nativos de Meta
+        FB.XFBML.parse();
       };
 
-      // 2. Función que lanza la ventana emergente de Meta
-      function launchWhatsAppSignup() {
+      // 2. Función Callback que se ejecuta automáticamente al terminar el flujo del botón
+      function checkLoginState() {
         const statusDiv = document.getElementById('status');
-        statusDiv.classList.remove('hidden');
-        statusDiv.innerText = "Ventana emergente abierta... Completa el registro ahí.";
+        statusDiv.innerText = "Procesando respuesta de Meta...";
         statusDiv.className = "mt-6 text-sm font-medium text-blue-600";
 
-        // SUSTITUYE ESTO POR EL NÚMERO QUE CREASTE EN EL PASO 1
-        const miConfigId = '2214655339300500'; 
-
-        FB.login(function(response) {
-          if (response.authResponse) {
-            const code = response.authResponse.code;
-            console.log('¡Éxito! Código obtenido:', code);
+        FB.getLoginStatus(function(response) {
+          if (response.status === 'connected') {
+            console.log('¡Inicio de sesión exitoso con botón oficial!');
+            console.log('Respuesta completa de autenticación:', response.authResponse);
             
-            statusDiv.innerText = "¡Proceso terminado con éxito! Tu número ya está vinculado. Puedes cerrar esta ventana.";
+            // Extraemos el código devuelto para el Embedded Signup
+            const code = response.authResponse.code;
+            console.log('Código obtenido (code):', code);
+            
+            statusDiv.innerText = "¡Vínculo completado! Tu número ha sido asociado. Puedes revisar el panel de Meta.";
             statusDiv.className = "mt-6 text-sm font-medium text-green-600";
           } else {
-            console.log('El usuario canceló el inicio de sesión o cerró la ventana antes de terminar.');
-            statusDiv.innerText = "El registro fue cancelado.";
+            console.log('El usuario no completó el flujo o se canceló:', response);
+            statusDiv.innerText = "El registro no se completó con éxito.";
             statusDiv.className = "mt-6 text-sm font-medium text-red-600";
-          }
-        }, {
-          config_id: miConfigId,
-          response_type: 'code',
-          override_default_response_type: true,
-          scope: 'whatsapp_business_management,whatsapp_business_messaging',
-          auth_type: 'reauthorize',
-          extras: {
-            setup: {},
           }
         });
       }
