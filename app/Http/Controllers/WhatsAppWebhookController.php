@@ -43,8 +43,22 @@ class WhatsAppWebhookController extends Controller
             $entry = $request->input('entry.0');
             $changes = $entry['changes'][0]['value'] ?? null;
 
+            if (isset($changes['statuses'])) {
+                return response('STATUS_RECEIVED', 200);
+            }
+
+            if (isset($changes['smb_message_echoes'])) {
+                Log::info('Mensaje enviado desde la app móvil (Echo) ignorado para evitar auto-respuesta.');
+                return response('ECHO_RECEIVED', 200);
+            }
+
             if (isset($changes['messages'][0])) {
                 $message = $changes['messages'][0];
+
+                $myBusinessNumber = env('WHATSAPP_BUSINESS_NUMBER');
+                if ($myBusinessNumber && str_contains($message['from'], $myBusinessNumber)) {
+                    return response('OWN_MESSAGE_IGNORED', 200);
+                }
 
                 if (isset($message['type']) && $message['type'] === 'text') {
                     $rawPhone = $message['from'];
@@ -58,7 +72,7 @@ class WhatsAppWebhookController extends Controller
             return response('EVENT_RECEIVED', 200);
         } catch (\Exception $e) {
             Log::error('Error en Webhook: ' . $e->getMessage());
-            return response('ERROR', 500);
+            return response('ERROR', 200);
         }
     }
 

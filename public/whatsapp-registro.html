@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>WhatsApp Coexistence Signup</title>
+</head>
+<body>
+    <h2>Conectar WhatsApp en Coexistencia</h2>
+    <button onclick="launchWhatsAppSignup()">Conectar Número</button>
+
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId            : '1710740677018215',
+          autoLogAppEvents : true,
+          xfbml            : true,
+          version          : 'v25.0'
+        });
+      };
+
+      function launchWhatsAppSignup() {
+        FB.login(function(response) {
+          if (response.authResponse) {
+            console.log('Token temporal obtenido:', response.authResponse.accessToken);
+          } else {
+            console.log('El usuario canceló el inicio de sesión.');
+          }
+        }, {
+          config_id: 'TU_CONFIG_ID_OPCIONAL', // Puedes crearlo en Business Manager, o omitirlo para el flujo estándar
+          response_type: 'code',
+          override_default_response_type: true,
+          extras: {
+            setup: {
+              // Parámetros adicionales si es necesario
+            }
+          }
+        });
+      }
+    </script>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+</body>
+</html>
