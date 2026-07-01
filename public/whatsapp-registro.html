@@ -58,10 +58,10 @@
           config_id: miConfigId,
           response_type: 'code',
           override_default_response_type: true,
+          scope: 'whatsapp_business_management,whatsapp_business_messaging',
+          auth_type: 'reauthorize',
           extras: {
             setup: {},
-            featureType: '',
-            sessionInfoVersion: '2'
           }
         });
       }
